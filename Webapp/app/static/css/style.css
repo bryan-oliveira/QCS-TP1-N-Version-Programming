@@ -1,0 +1,9 @@
+.abc {
+    border: solid 2px;
+    margin: 10px;
+}
+
+input.placeholderSmall::-webkit-input-placeholder { font-size: 8pt; }
+input.placeholderSmall::-moz-placeholder { font-size: 8pt; }
+input.placeholderSmall:-ms-input-placeholder { font-size: 8pt;}
+input.placeholderSmall:-moz-placeholder { font-size: 8pt; }

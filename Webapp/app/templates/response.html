@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Insulin Dose Calculator</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.0.23/css/bulma.min.css">
+
+    <!-- JS -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.js"></script>
+</head>
+<body>
+
+<div class="container">
+
+    <h1 class="title is-1 has-text-centered">Insulin Dose Calculator</h1>
+
+    <div class="columns">
+
+        <div class="column abc">
+            <a href="/mealstandard"><h3 class="title is-4">Mealtime insulin dose - standard insulin sensitivity</h3></a>
+        </div>
+
+        <div class="column abc">
+            <a href="/background"><h3 class="title is-4">Background insulin dose</h3></a>
+        </div>
+
+        <div class="column abc">
+            <a href="/mealpersonal"><h3 class="title is-4">Mealtime insulin dose - personal insulin sensitivity</h3></a>
+        </div>
+    </div>
+	
+	<div class="columns">
+		<div class="column">
+			<h3 class="subtitle is-3">Result from {{type}}</h3>
+			{% if data.response[3] != -1 %}
+				<div class="content">
+					<p>Value: <strong>{{data.response[3]}}</strong></p>
+				</div>
+				<button class="button is-link" onclick="showDetails()" >Show techical information</button>
+				<div class="content is-hidden" id="details">
+					<p>Number of web services used in the calculation: 3</p>
+					<p>Indivivual results:</p>
+					<ul>
+						{% if backup_response %}
+							{% for item in data.backup_ws %}
+								<li><strong>{{item}}</strong>; result: <strong>{{data.response[loop.index0]}}</strong></li>	
+							{% endfor %}
+						{% else %}
+							{% for item in data.ws %}
+								<li><strong>{{item}}</strong>; result: <strong>{{data.response[loop.index0]}}</strong></li>	
+							{% endfor %}
+						{% endif %}
+					</ul>
+					<p>Majority result: <strong>{{ data.response[3] }}</strong></p>
+				</div>
+			{% else %}
+				<div class="content">
+					<p>It was not possible to calculate the insulin dose; please try again</p>
+				</div>
+			{% endif %}
+		</div>
+	</div>
+
+</div>
+
+<script type="text/javascript" src="{{ url_for('static', filename='js/js-functions.js') }}"></script>
+
+</body>
+</html>

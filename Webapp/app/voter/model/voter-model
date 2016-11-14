@@ -1,0 +1,172 @@
+/* Considering 80 mg/dl to 120 mg/dl ideal glucose range. Unless user is in trouble, max    *
+ * intake would theoretically be 40 units on a sensitivity value of 1                       *
+ * For testing purposes, range of 5 untis will be used.                                     *
+ * #define MAX_UNITS 40                                                                     */
+
+#define MAX_UNITS 20
+
+int response[4];
+
+active proctype n_voter() {
+
+    int type;
+    select(type: 0 .. 2);
+
+    response[0] = -1;
+    response[1] = -1;
+    response[2] = -1;
+    response[3] = -1;
+	
+    bool backup_response = 0;
+
+	int k;
+
+    /* Get results from web services */
+	for (k : 0 .. 2) {
+		if
+		:: (type == 0) -> run backgroundInsulinDose(k);
+		:: (type == 1) -> run mealtimeInsulinDoseStandard(k);
+		:: else -> run mealtimeInsulinDosePersonal(k);
+        fi;
+	};    
+
+    /* Get final answer */
+    run decider();
+
+    /* Wait for answers or until timeout */
+    do
+    :: timeout -> break;
+    od;
+
+
+    /* If error or no consensus, retry */
+    if 
+    :: response[3] == -1 ->
+        k = 0;
+        /* Get results from web services */
+        for (k : 0 .. 2) {
+            if
+            :: (type == 0) -> run backgroundInsulinDose(k);
+            :: (type == 1) -> run mealtimeInsulinDoseStandard(k);
+            :: else -> run mealtimeInsulinDosePersonal(k);
+            fi;
+        };
+        run decider();
+        /* Wait for answers or until timeout */
+        do
+        :: timeout -> break;
+        od;
+
+    fi;
+
+    /* Print results */
+    if
+    :: response[3] != -1 -> printf("Foi obtido um resultado por maioria. O valor é: %d", response[1]);
+    :: else -> printf("Nao foi obtido um resultado por maioria");
+    fi;
+
+}
+
+/* Simulate possible web service responses */
+proctype web_service_response(int index) {
+    int result;
+    
+    if
+    ::true ->
+        select(result : 0 .. MAX_UNITS); 
+        response[index] = result
+    ::true -> 
+        response[index] = -1
+    fi
+    
+}
+
+
+/*
+def backgroundInsulinDose(index, ws, args, response):
+    clear_results(response)
+    client = Client(ws[index])
+    response[index] = client.service.backgroundInsulinDose(args[0])
+*/
+
+proctype backgroundInsulinDose(int index) {
+	run clear_results(index);
+    run web_service_response(index);
+}
+
+/*
+def mealtimeInsulinDosePersonal(index, ws, args, response):
+    clear_results(response)
+    client = Client(ws[index])
+    personal_sensitivity = client.service.personalSensitivityToInsulin(args[4], args[
+                                                                       5], args[6])
+    response[index] = client.service.mealtimeInsulinDose(
+        args[0], args[1], args[2], args[3], personal_sensitivity)
+*/
+
+proctype mealtimeInsulinDosePersonal(int index) {
+    run clear_results(index);
+    run web_service_response(index);
+}
+
+/*
+def mealtimeInsulinDoseStandard(index, ws, args, response):
+    clear_results(response)
+    client = Client(ws[index])
+    response[index] = client.service.mealtimeInsulinDose(
+        args[0], args[1], args[2], args[3], args[4])
+*/
+
+proctype mealtimeInsulinDoseStandard(int index) {
+	run clear_results(index);
+    run web_service_response(index);
+}
+
+/*
+
+def clear_results(response):
+    for index, items in enumerate(response):
+        response[index] = -1
+
+*/
+
+proctype clear_results(int index) {
+    response[index] = -1;
+}
+
+/*
+def decider(response):
+
+    array = response[:3]
+    array.sort()
+
+    if array[0] != -1 and ((array[1] <= array[2] - 1) or (array[1] <= array[0] + 1)):
+        response[3] = array[1]
+*/
+
+proctype decider() {
+    int array[3];
+
+    /* Sort array */
+    int m, j, tmp;
+    for(m: 0 .. 2) {
+        for(j: 0 .. 2-m-1) {
+            if
+            :: response[j] > response[j+1] ->
+                    tmp = response[j];
+                    response[j] = response[j+1];
+                    response[j+1] = tmp;
+            fi;
+        };
+    };
+
+	if
+	:: response[0] != -1 ->
+		if
+		:: ( (response[1] <= response[2] - 1) || (response[1] <= response[0] + 1) ) ->
+			response[3] = response[1];
+        fi;
+    fi;
+
+
+}

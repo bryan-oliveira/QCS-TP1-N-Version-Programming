@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Insulin Dose Calculator</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.0.23/css/bulma.min.css">
+
+    <!-- JS -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.js"></script>
+</head>
+<body>
+
+<div class="container">
+
+    <h1 class="title is-1 has-text-centered">Insulin Dose Calculator</h1>
+
+    <div class="columns">
+
+        <div class="column abc">
+            <a href="/mealstandard"><h3 class="title is-4">Mealtime insulin dose - standard insulin sensitivity</h3></a>
+        </div>
+
+        <div class="column abc">
+            <a href="/background"><h3 class="title is-4">Background insulin dose</h3></a>
+        </div>
+
+        <div class="column abc">
+            <a href="/mealpersonal"><h3 class="title is-4">Mealtime insulin dose - personal insulin sensitivity</h3></a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Insulin Dose Calculator</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.0.23/css/bulma.min.css">
+
+    <!-- JS -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.js"></script>
+</head>
+<body>
+
+<div class="container">
+
+    <h1 class="title is-1 has-text-centered">Insulin Dose Calculator</h1>
+
+    <div class="columns">
+
+        <div class="column abc">
+            <a href="/mealstandard"><h3 class="title is-4">Mealtime insulin dose - standard insulin sensitivity</h3></a>
+        </div>
+
+        <div class="column abc" style="background: #A2A2A2;">
+            <a href="/background"><h3 class="title is-4">Background insulin dose</h3></a>
+        </div>
+
+        <div class="column abc">
+            <a href="/mealpersonal"><h3 class="title is-4">Mealtime insulin dose - personal insulin sensitivity</h3></a>
+        </div>
+    </div>
+
+    <div class="columns">
+        <div class="column abc" id="second">
+            <h3 class="title is-4">Background insulin dose</h3>
+
+            <div class="notification is-danger is-hidden" id="notif-6">
+                <button class="delete" onclick="hideParent('#notif-6')"></button>Weight is out of range. Please exercise.
+            </div>
+
+            <form action="/backgroundDose" method="post" id="myForm">
+                <label class="label">Weight (Kg)</label>
+                <p class="control">
+                    <input autocomplete="off" class="input" type="text" name="weight" placeholder="40Kg - 130Kg" onkeyup="verifyField(40,130,event)">
+                </p>
+
+                <p class="control">
+                    <button class="button is-primary" id="button" disabled="disabled" >Calculate insulin dose</button>
+                    <a class="button is-link" onclick="resetform()">Clear</a>
+                </p>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="{{ url_for('static', filename='js/js-functions.js') }}"></script>
+
+</body>
+</html>
